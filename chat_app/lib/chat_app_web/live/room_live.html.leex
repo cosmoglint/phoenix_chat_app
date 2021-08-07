@@ -4,11 +4,14 @@
 <div class="chat-container">
   <div class="chat-text" phx-update="append">
     <%= for message <- @messages do %>
-      <p id="<%= message.uuid %>"><strong><%= message.username %></strong>: <%= message.content %></p>
+      <%= display_message(message) %>
     <% end %>
   </div>
   <div class="user-list">
     <h3>User List</h3>
+    <%= for user <- @user_list do %>
+      <p><%= user %></p>
+    <% end %>
   </div>
 </div>
 

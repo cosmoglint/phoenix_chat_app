@@ -11,7 +11,7 @@ defmodule ChatAppWeb.RoomLive do
       ChatAppWeb.Presence.track(self(), topic, username,  %{})
     end
     Logger.info(room_id)
-    {:ok, assign(socket, room_id: room_id, username: username,topic: topic, message: "", messages: [%{uuid: UUID.uuid4(), content: "#{username} joined the chat", username: "system"}], temporary_assigns: [messages: []]) }
+    {:ok, assign(socket, room_id: room_id, user_list: [], username: username,topic: topic, message: "", messages: [], temporary_assigns: [messages: []]) }
   end
 
   @impl true
@@ -37,18 +37,33 @@ defmodule ChatAppWeb.RoomLive do
 
   @imptl true
   def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, socket) do
-    Logger.info(joins: joins, leaves: leaves)
-    join_message = joins
+    join_messages = joins
       |> Map.keys()
       |> Enum.map(fn  username ->
-        %{uuid: UUID.uuid4(), content: "#{username} joined", type: :system}
+        %{type: :system, uuid: UUID.uuid4(), content: "#{username} joined"}
       end)
 
-    leave_message = leaves
+    leave_messages = leaves
       |> Map.keys()
       |> Enum.map(fn  username ->
-        %{uuid: UUID.uuid4(), content: "#{username} left", type: :system}
+        %{type: :system, uuid: UUID.uuid4(), content: "#{username} left"}
       end)
-    {:noreply, socket}
+
+    user_list = ChatAppWeb.Presence.list(socket.assigns.topic)
+      |> Map.keys()
+    Logger.info(userlist: user_list)
+    {:noreply, assign(socket, messages: leave_messages ++ join_messages , user_list: user_list)}
+  end
+
+  def display_message(%{type: :system, uuid: uuid, content: content}) do
+    ~E"""
+    <p id="<%= uuid %>"><em><%= content %></em></p>
+    <p>bruh</p>
+    """
+  end
+  def display_message(%{uuid: uuid, content: content, username: username}) do
+    ~E"""
+    <p id="<%= uuid %>"><strong><%= username %></strong>: <%= content %></p>
+    """
   end
 end
