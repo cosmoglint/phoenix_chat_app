@@ -1,6 +1,32 @@
 /* This file is for your main application css. */
 @import "./phoenix.css";
 
+.chat-container{
+
+  display: flex;
+  justify-content: space-between;
+  height: 500px;
+  overflow: auto;
+}
+
+.user-list{
+  padding: 1em;
+  margin: 1em;
+}
+
+.chat-text{
+  border: 1px solid;
+  padding: 1em;
+  margin: 1em;
+  flex-grow: 1;
+}
+
+.input-text{
+  margin: 3px;
+  padding: 1em;
+}
+
+
 /* LiveView specific classes for your customizations */
 .phx-no-feedback.invalid-feedback,
 .phx-no-feedback .invalid-feedback {
